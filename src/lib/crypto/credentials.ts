@@ -33,9 +33,9 @@ function toB64(bytes: Uint8Array): string {
   for (const b of bytes) s += String.fromCharCode(b);
   return btoa(s);
 }
-function fromB64(s: string): Uint8Array {
+function fromB64(s: string): Uint8Array<ArrayBuffer> {
   const bin = atob(s);
-  const out = new Uint8Array(bin.length);
+  const out = new Uint8Array(new ArrayBuffer(bin.length));
   for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
   return out;
 }
