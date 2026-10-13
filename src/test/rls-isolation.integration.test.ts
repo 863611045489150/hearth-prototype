@@ -35,7 +35,7 @@ describe.skipIf(!enabled)("cross-user isolation (real database)", () => {
   let b: SupabaseClient;
   const users: { id: string; email: string }[] = [];
   const rowsA: Record<string, string> = {};
-  const row = (t: string): string => row(t) ?? "";
+  const row = (t: string): string => rowsA[t] ?? "";
   const uidA = (): string => users[0]?.id ?? "";
   let credIdA = "";
 
