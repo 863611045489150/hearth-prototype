@@ -14,7 +14,442 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      assets: {
+        Row: {
+          created_at: string
+          creation_id: string | null
+          filename: string
+          id: string
+          metadata: Json
+          mime_type: string
+          size_bytes: number | null
+          storage_path: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          creation_id?: string | null
+          filename: string
+          id?: string
+          metadata?: Json
+          mime_type: string
+          size_bytes?: number | null
+          storage_path: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          creation_id?: string | null
+          filename?: string
+          id?: string
+          metadata?: Json
+          mime_type?: string
+          size_bytes?: number | null
+          storage_path?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assets_creation_id_fkey"
+            columns: ["creation_id"]
+            isOneToOne: false
+            referencedRelation: "creations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          id: string
+          settings: Json
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          settings?: Json
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          settings?: Json
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      creations: {
+        Row: {
+          created_at: string
+          error: string | null
+          id: string
+          kind: string
+          name: string
+          prompt: string | null
+          spec: Json
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          id?: string
+          kind: string
+          name?: string
+          prompt?: string | null
+          spec?: Json
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          id?: string
+          kind?: string
+          name?: string
+          prompt?: string | null
+          spec?: Json
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      memory_entries: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          id: string
+          source: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          content: string
+          created_at?: string
+          id?: string
+          source?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          id?: string
+          source?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          detail: string | null
+          id: string
+          metadata: Json
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content?: string
+          conversation_id: string
+          created_at?: string
+          detail?: string | null
+          id?: string
+          metadata?: Json
+          role: string
+          user_id?: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          detail?: string | null
+          id?: string
+          metadata?: Json
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          onboarding_completed: boolean
+          preferences: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id: string
+          onboarding_completed?: boolean
+          preferences?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          onboarding_completed?: boolean
+          preferences?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      provider_configs: {
+        Row: {
+          base_url: string | null
+          created_at: string
+          enabled: boolean
+          id: string
+          key_hint: string | null
+          label: string
+          last_error: string | null
+          last_tested_at: string | null
+          provider: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          base_url?: string | null
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          key_hint?: string | null
+          label?: string
+          last_error?: string | null
+          last_tested_at?: string | null
+          provider: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          base_url?: string | null
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          key_hint?: string | null
+          label?: string
+          last_error?: string | null
+          last_tested_at?: string | null
+          provider?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      provider_credentials: {
+        Row: {
+          ciphertext: string
+          created_at: string
+          id: string
+          iv: string
+          key_version: number
+          provider_config_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ciphertext: string
+          created_at?: string
+          id?: string
+          iv: string
+          key_version?: number
+          provider_config_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ciphertext?: string
+          created_at?: string
+          id?: string
+          iv?: string
+          key_version?: number
+          provider_config_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_credentials_provider_config_id_fkey"
+            columns: ["provider_config_id"]
+            isOneToOne: true
+            referencedRelation: "provider_configs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      render_jobs: {
+        Row: {
+          created_at: string
+          creation_id: string | null
+          error: string | null
+          external_job_id: string | null
+          id: string
+          progress: number | null
+          status: string
+          updated_at: string
+          user_id: string
+          worker: string
+        }
+        Insert: {
+          created_at?: string
+          creation_id?: string | null
+          error?: string | null
+          external_job_id?: string | null
+          id?: string
+          progress?: number | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          worker: string
+        }
+        Update: {
+          created_at?: string
+          creation_id?: string | null
+          error?: string | null
+          external_job_id?: string | null
+          id?: string
+          progress?: number | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          worker?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "render_jobs_creation_id_fkey"
+            columns: ["creation_id"]
+            isOneToOne: false
+            referencedRelation: "creations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          due_at: string | null
+          id: string
+          notes: string | null
+          priority: string
+          source: string
+          source_conversation_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          due_at?: string | null
+          id?: string
+          notes?: string | null
+          priority?: string
+          source?: string
+          source_conversation_id?: string | null
+          title: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          due_at?: string | null
+          id?: string
+          notes?: string | null
+          priority?: string
+          source?: string
+          source_conversation_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_source_conversation_id_fkey"
+            columns: ["source_conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      usage_events: {
+        Row: {
+          created_at: string
+          error_code: string | null
+          id: string
+          kind: string
+          latency_ms: number | null
+          model: string | null
+          provider: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          error_code?: string | null
+          id?: string
+          kind: string
+          latency_ms?: number | null
+          model?: string | null
+          provider?: string | null
+          status: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          error_code?: string | null
+          id?: string
+          kind?: string
+          latency_ms?: number | null
+          model?: string | null
+          provider?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
