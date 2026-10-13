@@ -80,3 +80,12 @@ The project is currently an empty starter. We will build Hearth in small, testab
 4. Design tokens (monochrome + ember accent, fonts), sign-in page, minimal signed-in shell placeholder that shows only the account and a sign-out button.
 5. Cross-user isolation test against the real database using two test accounts.
 6. Browser check: sign up, sign in, reload keeps the session, sign out. Then report results.
+
+## Phase A acceptance criteria
+- Encryption key stored only in Lovable Cloud's managed secret store; never printed, logged, committed, or sent to the browser. If secure storage is unavailable, stop the encryption work and report it.
+- Email/password and Google sign-in verified separately. If Google needs setup you haven't supplied, report it and don't mark it working.
+- Two-account test against the real database: neither account can read, change, or delete the other's conversations, messages, tasks, memory, provider configs, creations, or assets. Separate check that the browser cannot read stored credentials.
+- Encryption tests: round trip, wrong key, tampered ciphertext, missing secret. Only fake test keys.
+- Browser checks: sign-up, sign-in, session kept after reload, sign-out.
+- Signed-in shell: wordmark, account info, working sign-out. Nothing more.
+- Final report: migrations and files changed, observed test results, failures, remaining setup, and a clear verified vs. unverified list. Then stop and wait for your review.
