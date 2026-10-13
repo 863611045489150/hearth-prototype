@@ -62,3 +62,21 @@ The project is currently an empty starter. We will build Hearth in small, testab
 - Storage bucket private; downloads via signed, expiring URLs.
 - Scene and video specs validated with zod schemas.
 - Built in the order A → E, verifying in the browser at each step.
+
+## Working rules (added)
+- Build and verify one phase at a time. This approval covers Phase A only; Phase B starts after you review the Phase A report.
+- After each phase: report files changed, what actually works, tests run, failures, and remaining work.
+- Check what Lovable Cloud and Lovable AI really support (live model list, image/video endpoints, streaming) before relying on them. Anything not confirmed stays marked "Unavailable".
+- Credentials: encrypted with a managed server secret, kept out of client code, client-readable rows, logs and error messages; per-user checks and server-side validation on every credential action; decrypted keys never sent to the browser.
+- Automated tests for authorization, cross-user isolation (conversations, credentials, memory, tasks, assets), routing, fallback, and secure downloads.
+- The app clearly labels cloud-stored memory/history as different from the future desktop app's on-device memory.md and SQLite storage.
+- Real functionality before decoration; no simulated successes of any kind.
+- Modular, portable code: provider adapters, separate routing policy, validated creation specs, documented render-worker interface.
+
+## Phase A scope for this run
+1. Enable Lovable Cloud; turn on email/password and Google sign-in.
+2. Migrations for all tables in the plan with row-level security on every row owned by a user; credentials table with no browser read access.
+3. Generate the server encryption secret; encryption helper with unit tests.
+4. Design tokens (monochrome + ember accent, fonts), sign-in page, minimal signed-in shell placeholder that shows only the account and a sign-out button.
+5. Cross-user isolation test against the real database using two test accounts.
+6. Browser check: sign up, sign in, reload keeps the session, sign out. Then report results.
