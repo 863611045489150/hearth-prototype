@@ -1,4 +1,3 @@
-// @vitest-environment node
 /**
  * Cross-user isolation test against the REAL Lovable Cloud database.
  * Creates two throwaway confirmed test users (admin API, sandbox-only env),
