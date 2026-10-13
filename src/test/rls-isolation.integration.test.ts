@@ -35,6 +35,8 @@ describe.skipIf(!enabled)("cross-user isolation (real database)", () => {
   let b: SupabaseClient;
   const users: { id: string; email: string }[] = [];
   const rowsA: Record<string, string> = {};
+  const row = (t: string): string => row(t) ?? "";
+  const uidA = (): string => users[0]?.id ?? "";
   let credIdA = "";
 
   beforeAll(async () => {
@@ -52,13 +54,13 @@ describe.skipIf(!enabled)("cross-user isolation (real database)", () => {
       if (tag === "a") a = c;
       else b = c;
     }
-    const uid = users[0].id;
+    const uid = uidA();
     const conv = await a.from("conversations").insert({ title: "A private" }).select().single();
     if (conv.error) throw conv.error;
-    rowsA.conversations = conv.data.id;
+    row("conversation")s = conv.data.id;
     const msg = await a.from("messages").insert({ conversation_id: conv.data.id, role: "user", content: "secret A" }).select().single();
     if (msg.error) throw msg.error;
-    rowsA.messages = msg.data.id;
+    row("message")s = msg.data.id;
     const inserts: Record<string, Record<string, unknown>> = {
       tasks: { title: "A task" },
       memory_entries: { content: "A memory" },
@@ -74,11 +76,11 @@ describe.skipIf(!enabled)("cross-user isolation (real database)", () => {
     }
     const asset = await a.from("assets").insert({ storage_path: `${uid}/x.png`, filename: "x.png", mime_type: "image/png" }).select().single();
     if (asset.error) throw asset.error;
-    rowsA.assets = asset.data.id;
+    row("asset")s = asset.data.id;
     // Credential row can only be written server-side.
     const cred = await admin
       .from("provider_credentials")
-      .insert({ user_id: uid, provider_config_id: rowsA.provider_configs, ciphertext: "ZmFrZQ==", iv: "ZmFrZQ==" })
+      .insert({ user_id: uid, provider_config_id: row("provider_configs"), ciphertext: "ZmFrZQ==", iv: "ZmFrZQ==" })
       .select()
       .single();
     if (cred.error) throw cred.error;
@@ -89,7 +91,7 @@ describe.skipIf(!enabled)("cross-user isolation (real database)", () => {
 
   afterAll(async () => {
     if (!admin) return;
-    if (users[0]) await admin.storage.from("assets").remove([`${users[0].id}/private.txt`]);
+    if (users[0]) await admin.storage.from("assets").remove([`${uidA()}/private.txt`]);
     for (const t of [...TABLES, "messages", "provider_credentials"]) {
       await admin.from(t).delete().in("user_id", users.map((u) => u.id));
     }
@@ -99,7 +101,7 @@ describe.skipIf(!enabled)("cross-user isolation (real database)", () => {
 
   it("owner can read own rows", async () => {
     for (const t of [...TABLES, "messages"]) {
-      const r = await a.from(t).select("id").eq("id", rowsA[t]);
+      const r = await a.from(t).select("id").eq("id", row(t));
       expect(r.error, t).toBeNull();
       expect(r.data, t).toHaveLength(1);
     }
@@ -107,31 +109,31 @@ describe.skipIf(!enabled)("cross-user isolation (real database)", () => {
 
   for (const t of [...TABLES, "messages"] as const) {
     it(`B cannot read, update or delete A's ${t}`, async () => {
-      const read = await b.from(t).select("*").eq("id", rowsA[t]);
+      const read = await b.from(t).select("*").eq("id", row(t));
       expect(read.data ?? []).toHaveLength(0);
       const all = await b.from(t).select("id");
-      expect((all.data ?? []).map((r: { id: string }) => r.id)).not.toContain(rowsA[t]);
-      const upd = await b.from(t).update({ created_at: new Date(0).toISOString() }).eq("id", rowsA[t]).select();
+      expect((all.data ?? []).map((r: { id: string }) => r.id)).not.toContain(row(t));
+      const upd = await b.from(t).update({ created_at: new Date(0).toISOString() }).eq("id", row(t)).select();
       expect(upd.data ?? []).toHaveLength(0);
-      const del = await b.from(t).delete().eq("id", rowsA[t]).select();
+      const del = await b.from(t).delete().eq("id", row(t)).select();
       expect(del.data ?? []).toHaveLength(0);
-      const still = await a.from(t).select("id").eq("id", rowsA[t]);
+      const still = await a.from(t).select("id").eq("id", row(t));
       expect(still.data).toHaveLength(1);
     });
   }
 
   it("B cannot insert rows owned by A", async () => {
-    const r = await b.from("tasks").insert({ title: "spoof", user_id: users[0].id });
+    const r = await b.from("tasks").insert({ title: "spoof", user_id: uidA() });
     expect(r.error).not.toBeNull();
   });
 
   it("B cannot add a message to A's conversation", async () => {
-    const r = await b.from("messages").insert({ conversation_id: rowsA.conversations, role: "user", content: "x" });
+    const r = await b.from("messages").insert({ conversation_id: row("conversations"), role: "user", content: "x" });
     expect(r.error).not.toBeNull();
   });
 
   it("B cannot read A's profile", async () => {
-    const r = await b.from("profiles").select("*").eq("id", users[0].id);
+    const r = await b.from("profiles").select("*").eq("id", uidA());
     expect(r.data ?? []).toHaveLength(0);
   });
 
@@ -156,7 +158,7 @@ describe.skipIf(!enabled)("cross-user isolation (real database)", () => {
   });
 
   it("storage: B cannot download or sign A's file; A can", async () => {
-    const path = `${users[0].id}/private.txt`;
+    const path = `${uidA()}/private.txt`;
     const bd = await b.storage.from("assets").download(path);
     expect(bd.data).toBeNull();
     const bs = await b.storage.from("assets").createSignedUrl(path, 60);
