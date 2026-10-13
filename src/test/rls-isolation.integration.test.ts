@@ -57,10 +57,10 @@ describe.skipIf(!enabled)("cross-user isolation (real database)", () => {
     const uid = uidA();
     const conv = await a.from("conversations").insert({ title: "A private" }).select().single();
     if (conv.error) throw conv.error;
-    row("conversation")s = conv.data.id;
+    rowsA["conversations"] = conv.data.id;
     const msg = await a.from("messages").insert({ conversation_id: conv.data.id, role: "user", content: "secret A" }).select().single();
     if (msg.error) throw msg.error;
-    row("message")s = msg.data.id;
+    rowsA["messages"] = msg.data.id;
     const inserts: Record<string, Record<string, unknown>> = {
       tasks: { title: "A task" },
       memory_entries: { content: "A memory" },
@@ -69,14 +69,14 @@ describe.skipIf(!enabled)("cross-user isolation (real database)", () => {
       render_jobs: { worker: "remotion" },
       usage_events: { kind: "chat", status: "ok" },
     };
-    for (const [t, row] of Object.entries(inserts)) {
-      const r = await a.from(t).insert(row).select().single();
+    for (const [t, rowData] of Object.entries(inserts)) {
+      const r = await a.from(t).insert(rowData).select().single();
       if (r.error) throw new Error(`${t}: ${r.error.message}`);
       rowsA[t] = r.data.id;
     }
     const asset = await a.from("assets").insert({ storage_path: `${uid}/x.png`, filename: "x.png", mime_type: "image/png" }).select().single();
     if (asset.error) throw asset.error;
-    row("asset")s = asset.data.id;
+    rowsA["assets"] = asset.data.id;
     // Credential row can only be written server-side.
     const cred = await admin
       .from("provider_credentials")
