@@ -36,7 +36,7 @@ describe("credential encryption", () => {
   it("rejects modified ciphertext", async () => {
     const enc = await encryptSecret(FAKE_API_KEY, KEY_A, AAD);
     const bytes = atob(enc.ciphertext).split("");
-    bytes[0] = String.fromCharCode(bytes[0].charCodeAt(0) ^ 0xff);
+    bytes[0] = String.fromCharCode((bytes[0] ?? "a").charCodeAt(0) ^ 0xff);
     const tampered = { ...enc, ciphertext: btoa(bytes.join("")) };
     await expect(decryptSecret(tampered, KEY_A, AAD)).rejects.toBeInstanceOf(DecryptionError);
   });
