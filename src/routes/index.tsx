@@ -1,24 +1,44 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Wordmark } from "@/components/hearth/Wordmark";
+import { Button } from "@/components/ui/button";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Hearth — AI workspace prototype" },
+      { name: "description", content: "A minimal AI workspace with model routing, memory, tasks and a creation studio. Web prototype." },
+      { property: "og:title", content: "Hearth — AI workspace prototype" },
+      { property: "og:description", content: "A minimal AI workspace with model routing, memory, tasks and a creation studio." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <main className="flex min-h-screen flex-col bg-background px-6">
+      <header className="flex h-14 items-center justify-between">
+        <Wordmark />
+        <Link to="/auth" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+          Sign in
+        </Link>
+      </header>
+      <section className="mx-auto flex w-full max-w-xl flex-1 flex-col justify-center gap-6 pb-24">
+        <h1 className="text-3xl font-medium leading-tight tracking-tight sm:text-4xl">
+          A quiet workspace for thinking with AI.
+        </h1>
+        <p className="text-muted-foreground">
+          Conversations, memory, tasks and a creation studio in one place. This is an early web prototype; the
+          desktop app for Windows and macOS comes later.
+        </p>
+        <div>
+          <Button asChild>
+            <Link to="/auth">Get started</Link>
+          </Button>
+        </div>
+      </section>
+    </main>
   );
 }
