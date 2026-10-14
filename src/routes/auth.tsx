@@ -68,7 +68,21 @@ function AuthPage() {
 
   async function onGoogle() {
     setError(null);
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/auth" });
+    const redirectTo = window.location.origin + "/auth";
+    // The managed sign-in helper relies on a /~oauth route that only Lovable hosting
+    // serves. On other hosts (e.g. Vercel) that path hits this app and renders the 404,
+    // so use the backend's standard OAuth redirect there instead.
+    const host = window.location.hostname;
+    const onLovableHost = host.endsWith(".lovable.app") || host.endsWith(".lovableproject.com") || host === "localhost";
+    if (!onLovableHost) {
+      const { error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo } });
+      if (error) {
+        setError(error.message ?? "Google sign-in failed.");
+        toast.error("Google sign-in failed.");
+      }
+      return;
+    }
+    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: redirectTo });
     if (result.error) {
       setError(result.error.message ?? "Google sign-in failed.");
       toast.error("Google sign-in failed.");
